@@ -1,7 +1,8 @@
 import functools
+import json as jsonlib
 from pathlib import Path
 import re
-from typing import Callable, NamedTuple, TypeVar
+from typing import Callable, NamedTuple, Optional, TypeVar
 from .lib import ResourceManager, loader
 
 T = TypeVar("T")
@@ -22,16 +23,20 @@ def extension(ext: str):
     return ext_loader_decorator
 
 
+P = TypeVar("P", contravariant=True)
+
+
 def fallback(
     fallback_value: T,
 ) -> Callable[
-    [Callable[[ResourceManager, T], object]], Callable[[ResourceManager, T], object]
+    [Callable[[ResourceManager, P], Optional[T]]],
+    Callable[[ResourceManager, P], Optional[T]],
 ]:
     def fallback_decorator(
-        func: Callable[[ResourceManager, T], object]
-    ) -> Callable[[ResourceManager, T], object]:
+        func: Callable[[ResourceManager, P], Optional[T]]
+    ) -> Callable[[ResourceManager, P], Optional[T]]:
         @functools.wraps(func)
-        def wrapper(r: ResourceManager, o: T):
+        def wrapper(r: ResourceManager, o: P):
             try:
                 return func(r, o)
             except Exception as e:
@@ -45,14 +50,22 @@ def fallback(
 
 @loader
 @extension(r"txt")
-def text(r: ResourceManager, o: object):
-    if isinstance(o, Path):
-        r.debug("Loaded text from " + repr(o))
-        return o.read_text()
+@fallback("Cannot load text")
+def text(r: ResourceManager, p: Path):
+    r.debug("Loaded text from " + repr(p))
+    return p.read_text()
+
+
+@loader
+@extension(r"json")
+def json(r: ResourceManager, p: Path):
+    r.debug("Loaded json from " + repr(p))
+    return jsonlib.loads(p.read_text())
 
 
 class Loaders(NamedTuple):
     text = text
+    json = json
 
 
 __all__ = ["extension", "fallback", "Loaders"]
