@@ -13,10 +13,11 @@ PyPI: https://pypi.org/project/pathtyped/
 pip install pathtyped
 ```
 
-## Showcase
+# Showcase
 
-```
-# Your text files
+> This code can be found in [demo](demo)
+
+## Your text files
 resources/
     data.json
     main.txt
@@ -80,7 +81,7 @@ root = NamedTuple("root", [
 ])
 ```
 
-### And provides you with type compilation
+## And provides you with type compilation
 
 ![1673847586091](image/README/1673847586091.png)
 
