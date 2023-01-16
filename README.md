@@ -189,6 +189,10 @@ Change the `python.analysis.typeCheckingMode` setting to `strict` and it not all
 }
 ```
 
+## Cannot import `TypeGuard`
+
+Project requires Python 3.10 or higher
+
 # Contributing
 
 If you have an idea for this library, please make an issue first instead of a PR. I will be happy to discuss it with you

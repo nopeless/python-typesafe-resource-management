@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "nopeless" }]
 license = { file = "LICENSE" }
 keywords = ["path", "file", "type"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 classifiers = [
     "Programming Language :: Python :: 3",
