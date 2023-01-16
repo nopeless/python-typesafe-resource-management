@@ -342,7 +342,9 @@ class ResourceManager:
                     continue
                 f = unified_part[file] = Path(os.path.join(root, file))
 
-                self.debug(f"{f.resolve()} has been added to unified directory mapping")
+                self.debug(
+                    f"{repr(f.resolve())} has been added to unified directory mapping"
+                )
 
             for dir in dirs:
                 if self.config.ignore and re.fullmatch(self.config.ignore, dir):
