@@ -447,7 +447,9 @@ def middleware(func: Callable[[ResourceManager, str, EntryTree], Optional[EntryT
                     head = root[property]
                     assert is_entry_node(head)
 
-                    r = func(self, f"{location}.{property}", head)
+                    r = func(
+                        self, f"{location}.{property}" if location else property, head
+                    )
                     if r is not None:
                         root[property] = r
                 else:
@@ -457,7 +459,8 @@ def middleware(func: Callable[[ResourceManager, str, EntryTree], Optional[EntryT
                     head = root[property]
                     assert is_entry_node(head)
 
-                    r = func(self, f"{location}.{property}", head)
+                    assert location != ""
+                    r = func(self, f"{location}[{property}]", head)
                     if r is not None:
                         root[property] = r
 
