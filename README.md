@@ -15,7 +15,7 @@ resources/
 
 ```py
 # main.py
-from apathy import *
+from pathtyped import *
 
 resource_manger = ResourceManager(
     # The resource folder
@@ -29,7 +29,7 @@ resource_manger = ResourceManager(
     # Middlewares
     [group_by(r"(.+)_(\d+)")],
     # Loaders
-    [text]
+    [Loaders.text]
 )
 
 # The file below does not exist yet
