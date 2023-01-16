@@ -7,6 +7,8 @@ This package creates a definition file by traversing the resource folder and par
  - [x] Automatic type definition generation
  - [x] Middlewares, loaders api
 
+PyPI: https://pypi.org/project/pathtyped/
+
 ```sh
 pip install pathtyped
 ```
