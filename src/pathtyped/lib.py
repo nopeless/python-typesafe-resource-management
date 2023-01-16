@@ -167,15 +167,15 @@ class ResourceManager:
             self.resource_folder
         )
 
-        mapping: EntryTree = self.unified_directory_mappping
+        tree: EntryTree = self.unified_directory_mappping
 
         for middleware in self.middlewares:
-            mapping = middleware(self, "<root>", mapping)
+            tree = middleware(self, "<root>", tree)
 
         # Make sure all properties are valid python property names
-        mapping = to_python_property_name(self, "<root>", mapping)
+        tree = to_python_property_name(self, "<root>", tree)
 
-        self.entry_tree: EntryTree = mapping
+        self.entry_tree = tree
 
         # Generate hash for integrity check
         hash_sum = hashlib.md5()
@@ -216,7 +216,7 @@ class ResourceManager:
             )
             return obj
 
-        def traverse_mapping_generate_namedtuple_or_tuple(
+        def traverse_tree_generate_namedtuple_or_tuple(
             indent: str,
             nt: Union[NamedTuple, list[object]],
             m: EntryTree,
@@ -231,7 +231,7 @@ class ResourceManager:
                         # Is dict
                         d: dict[str, object] = v
                         content += f'NamedTuple("{k}", [\n'
-                        rd = traverse_mapping_generate_namedtuple_or_tuple(
+                        rd = traverse_tree_generate_namedtuple_or_tuple(
                             indent + self.config.indent,
                             create_blank_namedtuple(k, d.keys()),
                             d,
@@ -245,7 +245,7 @@ class ResourceManager:
                         content += f"tuple[\n"
                         rl: list[
                             EntryTree
-                        ] = traverse_mapping_generate_namedtuple_or_tuple(
+                        ] = traverse_tree_generate_namedtuple_or_tuple(
                             indent + self.config.indent,
                             [None for _ in range(len(l))],  # type: ignore
                             l,
@@ -269,7 +269,7 @@ class ResourceManager:
                         # Is dict
                         d: dict[str, object] = v
                         content += f'{indent}NamedTuple("{i}", [\n'
-                        rd = traverse_mapping_generate_namedtuple_or_tuple(
+                        rd = traverse_tree_generate_namedtuple_or_tuple(
                             indent + self.config.indent,
                             create_blank_namedtuple(str(i), d.keys()),
                             d,
@@ -281,7 +281,7 @@ class ResourceManager:
                         # Is list
                         l: list[object] = v
                         content += f"{indent}tuple[\n"
-                        rl = traverse_mapping_generate_namedtuple_or_tuple(
+                        rl = traverse_tree_generate_namedtuple_or_tuple(
                             indent + self.config.indent,
                             [None for _ in range(len(l))],  # type: ignore
                             l,
@@ -299,7 +299,7 @@ class ResourceManager:
                     content += f",\n"
             return nt
 
-        self.root: NamedTuple = traverse_mapping_generate_namedtuple_or_tuple(
+        self.root: NamedTuple = traverse_tree_generate_namedtuple_or_tuple(
             self.config.indent,
             namedtuple("root", self.entry_tree.keys())(**self.entry_tree),  # type: ignore
             self.entry_tree,
@@ -391,7 +391,7 @@ class ResourceManager:
 
 
 def _walk_stems(
-    mapping: EntryTree, location: str
+    tree: EntryTree, location: str
 ) -> Generator[
     tuple[EntryList[object], str, Generator[int, None, None]], None, None
 ] | Generator[tuple[EntryDict[object], str, Generator[str, None, None]], None, None]:
@@ -400,23 +400,23 @@ def _walk_stems(
 
     Best to call with `[object_to_call]` and access [0] (fake head)
 
-    All keys are guaranteed to return `MappingType`
+    All keys are guaranteed to return `EntryList` or `EntryDict
 
     This is an internal api
     """
 
-    if isinstance(mapping, EntryDict):
-        keys = mapping.keys()
-        yield mapping, location, (k for k in keys if is_entry_node(mapping[k]))
+    if isinstance(tree, EntryDict):
+        keys = tree.keys()
+        yield tree, location, (k for k in keys if is_entry_node(tree[k]))
 
-        for k, v in mapping.items():
+        for k, v in tree.items():
             if is_entry_node(v):
                 yield from _walk_stems(v, f"{location}.{k}" if location else k)
     else:
-        indices = range(len(mapping))
-        yield mapping, location, (i for i in indices if is_entry_node(mapping[i]))
+        indices = range(len(tree))
+        yield tree, location, (i for i in indices if is_entry_node(tree[i]))
 
-        for i, v in enumerate(mapping):
+        for i, v in enumerate(tree):
             if is_entry_node(v):
                 yield from _walk_stems(v, f"{location}[{i}]" if location else f"[{i}]")
 
@@ -427,8 +427,8 @@ def middleware(func: Callable[[ResourceManager, str, EntryTree], Optional[EntryT
     """
 
     @functools.wraps(func)
-    def wrapper(self: ResourceManager, location: str, mapping: EntryTree) -> EntryTree:
-        fake_head: EntryTree = EntryDict({"<root>": mapping})
+    def wrapper(self: ResourceManager, location: str, tree: EntryTree) -> EntryTree:
+        fake_head: EntryTree = EntryDict({"<root>": tree})
         for root, location, properties in _walk_stems(fake_head, ""):
             for property in properties:
                 if isinstance(root, EntryDict):
@@ -470,13 +470,13 @@ def _normalize_property_name(name: str) -> str:
 
 @middleware
 def to_python_property_name(
-    r: ResourceManager, loc: str, mapping: EntryTree
+    r: ResourceManager, loc: str, tree: EntryTree
 ) -> Optional[EntryTree]:
     """
     Converts all keys into python property name
     """
     r.debug(f"to_property_name: Checking {loc}")
-    if isinstance(mapping, dict):
+    if isinstance(tree, dict):
 
         def con(k: str) -> str:
             res = _normalize_property_name(k)
@@ -484,7 +484,7 @@ def to_python_property_name(
                 r.debug(f"Renamed {loc}.{k} -> {loc}.{res}")
             return res
 
-        return EntryDict({con(k): v for k, v in mapping.items()})
+        return EntryDict({con(k): v for k, v in tree.items()})
 
 
 @overload

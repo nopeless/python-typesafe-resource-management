@@ -116,20 +116,34 @@ def group_by(p: str):
     @middleware
     def grouper(r: ResourceManager, loc: str, mapping: EntryTree) -> EntryTree | None:
         if isinstance(mapping, EntryDict):
+            rem: dict[str, object] = {}
+
             # Apply key transform
-            ls = [
-                ([m.group(1), *[entry_to_int_if_needed(e) for e in m.groups()[1:]]], o)
-                for key, o in mapping.items()
-                if (m := re.fullmatch(p, key)) is not None
-            ]
+
+            ls: list[tuple[list[str | int | None], object]] = []
+            for key, o in mapping.items():
+                if (m := re.fullmatch(p, key)) is not None:
+                    ls.append(
+                        (
+                            [
+                                m.group(1),
+                                *[entry_to_int_if_needed(e) for e in m.groups()[1:]],
+                            ],
+                            o,
+                        )
+                    )
+                    continue
+                rem[key] = o
+
             # TODO add some grid checks that enforces consistent grids
             # ex) [[0, 1], [0, 1, 2]] is not allowed as its neither a 2x2 grid or 2x3 grid
             # We know that this will return EntryTree as
             # the path is not empty
 
-            res = reducer(r, ls, loc)  # type: ignore
+            res: EntryDict[object] = reducer(r, ls, loc)  # type: ignore
             if res:
                 r.info(f"Found {len(ls)} entries for {loc}")
+                res.update(rem)
                 return res  # type: ignore
 
     return grouper
