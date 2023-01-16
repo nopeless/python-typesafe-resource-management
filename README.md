@@ -1,0 +1,1 @@
+# Typesafe resource management in Python
