@@ -181,7 +181,7 @@ def combined(r: ResourceManager, path: Path) -> Union[str, int]:
 
 ## Visual Studio Code shows that the type is any
 
-Change the `python.analysis.typeCheckingMode` setting to `strict` and it will error. Make sure that the Python language server is Pylance
+Change the `python.analysis.typeCheckingMode` setting to `strict` and it not allow you to access invalid properties. Make sure that the Python language server is Pylance
 
 ```json
 {
