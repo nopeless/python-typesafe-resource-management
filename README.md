@@ -22,7 +22,7 @@ resource_manger = ResourceManager(
     "resources",
     DefinitionFile(
         # The default import statement for types
-        "from defaults import *",
+        "", # ex) "from defaults import *",
         # The destination file to write to
         "resources/definition.py"
         ),
@@ -60,7 +60,7 @@ from typing import NamedTuple
 
 root = NamedTuple("root", [
   ("speech", tuple[
-    str,
+    str, # This will later be replaced by the file content at runtime
     str,
     str,
   ],),
@@ -167,3 +167,19 @@ def combined(r: ResourceManager, path: Path) -> Union[str, int]:
             res = t
     return res
 ```
+
+# FAQ
+
+## Visual Studio Code shows that the type is any
+
+Change the `python.analysis.typeCheckingMode` setting to `strict` and it will error. Make sure that the Python language server is Pylance
+
+```json
+{
+    "python.analysis.typeCheckingMode": "strict"
+}
+```
+
+# Contributing
+
+If you have an idea for this library, please make an issue first instead of a PR. I will be happy to discuss it with you
