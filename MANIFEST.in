@@ -1,3 +1,3 @@
-include LICENSE *.md *.toml
+include LICENSE *.md *.toml *.ini
 include requirements.txt
-include py.typed
+include src/pathtyped/py.typed
