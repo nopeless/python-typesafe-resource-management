@@ -1,6 +1,15 @@
 # Typesafe resource management in Python
 
-This package creates a definition file by traversing the resource folder
+This package creates a definition file by traversing the resource folder and parsing the files
+
+## Features
+ - [x] Typesafe resource management (needs compatible type checker)
+ - [x] Automatic type definition generation
+ - [x] Middlewares, loaders api
+
+```sh
+pip install pathtyped
+```
 
 ## Showcase
 
