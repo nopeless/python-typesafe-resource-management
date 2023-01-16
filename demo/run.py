@@ -23,6 +23,7 @@ rm = ResourceManager(
     ResourceManagerConfig(level=logging.DEBUG),
 )
 
+# The file below doesn't exist when starting
 from resource_definition import root
 
 resource: root = rm.root  # type: ignore
