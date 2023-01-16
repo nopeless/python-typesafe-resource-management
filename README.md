@@ -39,13 +39,10 @@ rm = ResourceManager(
     [Loaders.text, Loaders.json],
 )
 
+# The file below doesn't exist when starting
 from resource_definition import root
 
 resource: root = rm.root  # type: ignore
-# The file below does not exist yet
-from definition import root
-
-resource: root = resource_manager.root # type: ignore
 ```
 
 ```py
@@ -85,7 +82,7 @@ root = NamedTuple("root", [
 
 ## And provides you with type compilation
 
-![1673847586091](image/README/1673847586091.png)
+![1673847586091](https://raw.githubusercontent.com/nopeless/python-typesafe-resource-management/main/image/README/1673847586091.png)
 
 # Documentation
 
@@ -100,7 +97,7 @@ for middleware in middlewares:
     # The @middleware decorator will initiate the dfs preorder traversal
     tree = middleware(self, "<root>", tree)
 ```
-<img src="image/README/1673837228765.png" alt="drawing" width="200"/>
+<img src="https://github.com/nopeless/python-typesafe-resource-management/raw/main/image/README/1673837228765.png" alt="drawing" width="200"/>
 
 This also means that the middleware will be applied to the leaf of the trees that it has returned. This is the most desirable behavior for applying middlewares
 
