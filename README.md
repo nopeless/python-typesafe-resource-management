@@ -18,6 +18,8 @@ pip install pathtyped
 > This code can be found in [demo](demo)
 
 ## Your text files
+
+```
 resources/
     data.json
     main.txt
