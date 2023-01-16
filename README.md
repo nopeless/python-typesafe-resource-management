@@ -27,7 +27,7 @@ resource_manger = ResourceManager(
         "resources/definition.py"
         ),
     # Middlewares
-    [group_by(r"(.+)_(\d+)")],
+    [remove_known_extensions(r".*"), group_by(r"(.+)_(\d+)")],
     # Loaders
     [Loaders.text]
 )

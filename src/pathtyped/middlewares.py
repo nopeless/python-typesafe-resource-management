@@ -1,5 +1,6 @@
 from collections import defaultdict
 import re
+from typing import Callable
 
 from .lib import (
     EntryDict,
@@ -10,7 +11,9 @@ from .lib import (
 )
 
 
-def remove_known_extensions(extensions: str):
+def remove_known_extensions(
+    extensions: str,
+) -> Callable[[ResourceManager, str, EntryTree], EntryTree]:
     """
     Creates a middleware that removes known extensions from keys
 
