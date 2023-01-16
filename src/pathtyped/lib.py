@@ -262,7 +262,7 @@ class ResourceManager:
                         content += f"{indent}],"
                     else:
                         # Is type
-                        r = func(v, location) if v is not None else None
+                        r = func(v, f"{location}.{k}") if v is not None else None
                         content += f'{type(r).__name__ if r is not None else "None"}'
                         nt = nt._replace(**{k: r})
                     content += f"),\n"
@@ -296,7 +296,7 @@ class ResourceManager:
                         content += f"{indent}]"
                     else:
                         # Is type
-                        r = func(v, location) if v is not None else None
+                        r = func(v, f"{location}[{i}]") if v is not None else None
                         content += (
                             f'{indent}{type(r).__name__ if r is not None else "None"}'
                         )
@@ -352,9 +352,9 @@ class ResourceManager:
 
                 ds = os.path.join(root, dir)
                 # Create folder
-                d = unified_part[dir] = recursive_mapper(ds, EntryDict())
-
-                self.debug(f"Traversing {ds}")
+                d: MappingTypeDictOnly = EntryDict()
+                unified_part[dir] = d
+                self.debug(f"Traversing {repr(ds)}")
                 recursive_mapper(os.path.join(root, dir), d)
             return unified_part
 
