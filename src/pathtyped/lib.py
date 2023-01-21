@@ -205,10 +205,12 @@ class ResourceManager:
         assert isinstance(self.entry_tree, EntryDict)
 
         def func(obj: object, location: str) -> object:
+            found = False
             for loader in self.loaders:
                 try:
                     if (r := loader(self, obj)) is not None:
-                        return r
+                        obj = r
+                        found = True
                 except Exception as e:
                     self.critical(
                         f"Error while loading object at location {location}; "
@@ -216,9 +218,10 @@ class ResourceManager:
                         exc_info=True,
                     )
                     raise e
-            self.warning(
-                f"No loader found for object at location: {location}; " + repr(obj)
-            )
+            if not found:
+                self.warning(
+                    f"No loader found for object at location: {location}; " + repr(obj)
+                )
             return obj
 
         def traverse_tree_generate_namedtuple_or_tuple(

@@ -129,10 +129,10 @@ The resource manager will attempt to apply each loader to the leaf node in the o
 ```py
 for loader in self.loaders:
     if (r := loader(self, obj)) is not None:
-        return r
+        obj = r
 ```
 
-If you want multiple loaders to be applied the same leaf node see the example code at the bottom
+This means that a loader that transforms from `A->B` will be handled by another loader that transforms from `B-C` if they are in order
 
 ```py
 # Basic loaders
@@ -161,23 +161,6 @@ def pygame_image_load(r: ResourceManager, path: Path) -> pygame.Surface:
 def execute(r: ResourceManager, s: Script) -> object:
     return s.execute()
 
-# Two transformations
-@loader
-def str_node(r: ResourceManager, path: Path) -> str:
-    return path.read_text()
-
-@loader(str)
-def str_to_int(r: ResourceManager, s: str) -> int:
-    if s.isnumeric():
-        return int(s)
-
-@loader
-def combined(r: ResourceManager, path: Path) -> Union[str, int]:
-    res = path
-    for l in [str_node, str_to_int]:
-        if (t := l(r, res)) is not None:
-            res = t
-    return res
 ```
 
 # FAQ
