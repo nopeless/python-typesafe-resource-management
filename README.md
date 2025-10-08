@@ -28,6 +28,8 @@ resources/
     speech_2.txt
 ```
 
+consuming code
+
 ```py
 # main.py
 from pathtyped import *
